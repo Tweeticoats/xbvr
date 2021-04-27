@@ -27,3 +27,24 @@ jobs:
       
     - name: Check code formatting using gofmt
       uses: Jerome1337/gofmt-action@v1.0.4
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Checkout
+      run: git fetch --prune --unshallow --tags
+      
+    - name: Development Docker
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+      env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        docker run --privileged --rm tonistiigi/binfmt --install all
+        docker info
+        docker buildx create --name builder --use
+        docker buildx inspect --bootstrap
+        docker buildx ls
+        docker buildx build --platform linux/amd64,linux/arm64 -f Dockerfile --push --output=type=image,name=tweeticoats/xbvr:develop,push=true .
