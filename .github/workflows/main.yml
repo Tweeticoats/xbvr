@@ -36,7 +36,7 @@ jobs:
       run: git fetch --prune --unshallow --tags
       
     - name: Development Docker
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/develop' }}
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
       env:
         DOCKER_CLI_EXPERIMENTAL: enabled
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
